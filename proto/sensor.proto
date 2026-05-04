@@ -1,0 +1,106 @@
+syntax = "proto3";
+
+package greenhouse;
+
+message SensorData {
+  string device_id = 1;
+  float temperature = 2;
+  float humidity = 3;
+  float light = 4;
+  int64 timestamp = 5;
+  string crop_name = 6;
+  string location = 7;
+}
+
+message UploadResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message HeartbeatRequest {}
+message HeartbeatResponse {
+  bool success = 1;
+}
+
+message SetCropRequest {
+  string device_id = 1;
+  string crop_name = 2;
+}
+message SetCropResponse {
+  bool success = 1;
+}
+
+message GetCropRequest {
+  string device_id = 1;
+}
+message CropInfo {
+  string device_id = 1;
+  string crop_name = 2;
+  string source = 3;
+  int64 updated_at = 4;
+}
+message GetCropResponse {
+  CropInfo crop = 1;
+}
+
+message GetCropProfileRequest {
+  string crop_name = 1;
+}
+message CropProfile {
+  string crop_name = 1;
+  double min_temperature = 2;
+  double max_temperature = 3;
+  double min_humidity = 4;
+  double max_humidity = 5;
+  double min_light = 6;
+  double max_light = 7;
+}
+message GetCropProfileResponse {
+  CropProfile profile = 1;
+}
+
+message GetAllCropProfilesRequest {}
+message GetAllCropProfilesResponse {
+  repeated CropProfile profiles = 1;
+}
+
+message ControlCommand {
+  int32 id = 1;
+  string device_id = 2;
+  int64 timestamp = 3;
+  string crop_name = 4;
+  string command = 5;
+  string reason = 6;
+  string status = 7;
+}
+message GetPendingCommandsRequest {}
+message GetPendingCommandsResponse {
+  repeated ControlCommand commands = 1;
+}
+
+message UpdateCommandStatusRequest {
+  int32 id = 1;
+  string status = 2;
+}
+message UpdateCommandStatusResponse {
+  bool success = 1;
+}
+
+message ResolveAlertRequest {
+  string device_id = 1;
+}
+message ResolveAlertResponse {
+  bool success = 1;
+}
+
+service SensorService {
+  rpc UploadSensorData(SensorData) returns (UploadResponse);
+  rpc Heartbeat(HeartbeatRequest) returns (HeartbeatResponse);
+  rpc SetCurrentCrop(SetCropRequest) returns (SetCropResponse);
+  rpc GetCurrentCrop(GetCropRequest) returns (GetCropResponse);
+  rpc GetCropProfile(GetCropProfileRequest) returns (GetCropProfileResponse);
+  rpc GetAllCropProfiles(GetAllCropProfilesRequest) returns (GetAllCropProfilesResponse);
+  rpc GetPendingControlCommands(GetPendingCommandsRequest) returns (GetPendingCommandsResponse);
+  rpc UpdateControlCommandStatus(UpdateCommandStatusRequest) returns (UpdateCommandStatusResponse);
+  rpc ResolveLatestAlertByDevice(ResolveAlertRequest) returns (ResolveAlertResponse);
+}
